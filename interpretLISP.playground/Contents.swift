@@ -10,7 +10,7 @@ import Foundation
 //    case divide = "/"
 //}
 
-let operators = ["+", "*", "-", "/", ">", "<"]
+//let operators = ["+", "*", "-", "/", ">", "<"]
 
 func numberParser(input: String) -> [Any?]?
 {
@@ -129,17 +129,17 @@ func numberParser(input: String) -> [Any?]?
                     isExponentDone = true
                 }
             default:
-                if((intArray.joined()).isInteger) //if input is an Integer
-                {
-                    return [Int(intArray.joined()), String(inputArray)]
-                }
+//                if((intArray.joined()).isInteger) //if input is an Integer
+//                {
+//                    return [Int(intArray.joined()), String(inputArray)]
+//                }
+//
+//                if((intArray.joined()).isFloat) //if input is a Float
+//                {
+//                    return [Float(intArray.joined()), String(inputArray)]
+//                }
                 
-                if((intArray.joined()).isFloat) //if input is a Float
-                {
-                    return [Float(intArray.joined()), String(inputArray)]
-                }
-                
-                //else by default float
+                //else by default double
                 return [Double(intArray.joined()), String(inputArray)]
             }
         }
@@ -149,17 +149,17 @@ func numberParser(input: String) -> [Any?]?
         return nil
     }
     
-    if((intArray.joined()).isInteger) //if input is an Integer
-    {
-        return [Int(intArray.joined()), String(inputArray)]
-    }
+//    if((intArray.joined()).isInteger) //if input is an Integer
+//    {
+//        return [Int(intArray.joined()), String(inputArray)]
+//    }
+//
+//    if((intArray.joined()).isFloat) //if input is a Float
+//    {
+//        return [Float(intArray.joined()), String(inputArray)]
+//    }
     
-    if((intArray.joined()).isFloat) //if input is a Float
-    {
-        return [Float(intArray.joined()), String(inputArray)]
-    }
-    
-    //else by default float
+    //else by default Double
     return [Double(intArray.joined()), String(inputArray)]
 }
 
@@ -246,7 +246,7 @@ operationsDictionary[">"] = {(arrOperands:[Double]) -> Bool? in
 operationsDictionary["<"] = {(arrOperands:[Double]) -> Bool? in
     if(arrOperands.count == 2)
     {
-        return arrOperands[0] > arrOperands[1]
+        return arrOperands[0] < arrOperands[1]
     }
     print("Invalid")
     return nil
@@ -279,14 +279,7 @@ operationsDictionary["sqrt"] = {(arrOperands:[Double]) -> Double? in
     return nil
 }
 
-operationsDictionary["sqrt"] = {(arrOperands:[Double]) -> Double? in
-    if(arrOperands.count == 1)
-    {
-        return arrOperands[0].squareRoot().roundTo(places: 2)
-    }
-    print("Invalid")
-    return nil
-}
+
 /* Not working
 operationsDictionary["print"] = {()->Double in
     return Double.pi}
@@ -302,159 +295,204 @@ operationsDictionary["pi"] = {()->Double in
 //let res4 = operationsDictionary["/"]!([4,3,2])
 //let res5 = operationsDictionary[">"]!([2,3])
 //let res6 = operationsDictionary["<"]!([5,6,7])
-let res7 = operationsDictionary["sqrt"]!([4])
+//let res7 = operationsDictionary["sqrt"]!([4])
 
-func evaluate(operation:String, argArr:[Int])->Any?
-{
-    switch operation
-    {
-        case "+":
-            return argArr.reduce(0, { x, y in
-                x + y
-            })
-        case "*":
-            return argArr.reduce(1, { x, y in
-                x * y
-            })
-        case "-":
-            if(argArr.count == 0)
-            {
-                print("Invalid")
-                return 0
-            }
-            
-            if(argArr.count == 1)
-            {
-                return -argArr[0]
-            }
-            
-            var initialVal = argArr[0]
-            
-            for i in 1..<argArr.count
-            {
-                initialVal = initialVal - argArr[i]
-            }
-            return initialVal
-        case "/":
-            if(argArr.count == 0)
-            {
-                print("Invalid")
-                return 0
-            }
-            
-            if(argArr.count == 1)
-            {
-                return 1.0/Double(argArr[0])
-            }
-            
-            var initialVal = Double(argArr[0])
-            
-            for i in 1..<argArr.count
-            {
-                initialVal = initialVal / Double(argArr[i])
-            }
-            return initialVal
-        
-        case ">": return argArr[0] > argArr[1]
-        case "<": return argArr[0] < argArr[1]
-        case ">=": return argArr[0] >= argArr[1]
-        case "<=": return argArr[0] <= argArr[1]
-        case "=": return argArr[0] == argArr[1]
-        case "pi": return 3.14
-        default:
-            print("Still Working")
-    }
-    return 0
-}
+//func evaluate(operation:String, argArr:[Int])->Any?
+//{
+//    switch operation
+//    {
+//        case "+":
+//            return argArr.reduce(0, { x, y in
+//                x + y
+//            })
+//        case "*":
+//            return argArr.reduce(1, { x, y in
+//                x * y
+//            })
+//        case "-":
+//            if(argArr.count == 0)
+//            {
+//                print("Invalid")
+//                return 0
+//            }
+//
+//            if(argArr.count == 1)
+//            {
+//                return -argArr[0]
+//            }
+//
+//            var initialVal = argArr[0]
+//
+//            for i in 1..<argArr.count
+//            {
+//                initialVal = initialVal - argArr[i]
+//            }
+//            return initialVal
+//        case "/":
+//            if(argArr.count == 0)
+//            {
+//                print("Invalid")
+//                return 0
+//            }
+//
+//            if(argArr.count == 1)
+//            {
+//                return 1.0/Double(argArr[0])
+//            }
+//
+//            var initialVal = Double(argArr[0])
+//
+//            for i in 1..<argArr.count
+//            {
+//                initialVal = initialVal / Double(argArr[i])
+//            }
+//            return initialVal
+//
+//        case ">": return argArr[0] > argArr[1]
+//        case "<": return argArr[0] < argArr[1]
+//        case ">=": return argArr[0] >= argArr[1]
+//        case "<=": return argArr[0] <= argArr[1]
+//        case "=": return argArr[0] == argArr[1]
+//        case "pi": return 3.14
+//        default:
+//            print("Still Working")
+//    }
+//    return 0
+//}
 
-
-
-func parseInput(input:String)->Any?
-{
-    var newInput =  input.trimmingCharacters(in: .whitespacesAndNewlines)
-    
-    if(newInput.hasPrefix("(")) //check for initial "(" else return nil
-    {
-        newInput = String(newInput.dropFirst()).trimmingCharacters(in: .whitespacesAndNewlines) //remove the initial "(" and then remove white spaces
-        
-        let firstOperator  = String(newInput.removeFirst())//get the operator
-        
-        if(!operators.contains(firstOperator)) //if the operator is not from the set of operators
-        {
-            return nil
-        }
-        
-        var argArray = [Any]()
-        
-        while(newInput.count>0)
-        {
-            if let resultarray = numberParser(input: newInput.trimmingCharacters(in: .whitespacesAndNewlines)) //checking if the arg is a number
-            {
-                argArray.append(resultarray[0] as Any)
-                newInput = resultarray[1] as! String
-            }
-            else //if arg. is not a number
-            {
-                break
-            }
-        }
-        
-        //if(argArray.count == 0) // if the arguments are not numeric
-        //{
-        //    return nil
-        //}
-        
-        //Return nil if closing ")" is not found after the arg. are extracted
-        if(!newInput.trimmingCharacters(in: .whitespacesAndNewlines).hasPrefix(")"))
-        {
-            return nil
-        }
-        
-        return evaluate(operation: firstOperator, argArr: argArray as! [Int])
-        
-    }
-    return nil
-}
-
-func evaluater(_ input:String)->String?
-{
-    //   ( * (+ 2 3) (* 4 5))
-    
-    if (input.trimmingCharacters(in: .whitespacesAndNewlines).hasPrefix("("))
-    {
-        var inputString = input.trimmingCharacters(in: .whitespacesAndNewlines)
-        
-        
-        //remove the "("
-        
-//        if(inputString.trimmingCharacters(in: .whitespacesAndNewlines).hasPrefix(")"))
+//func parseInput(input:String)->Any?
+//{
+//    var newInput =  input.trimmingCharacters(in: .whitespacesAndNewlines)
+//
+//    if(newInput.hasPrefix("(")) //check for initial "(" else return nil
+//    {
+//        newInput = String(newInput.dropFirst()).trimmingCharacters(in: .whitespacesAndNewlines) //remove the initial "(" and then remove white spaces
+//
+//        let firstOperator  = String(newInput.removeFirst())//get the operator
+//
+//        if(!operators.contains(firstOperator)) //if the operator is not from the set of operators
 //        {
 //            return nil
 //        }
-//        let
 //
-//        while(inputString.count > 0)
+//        var argArray = [Any]()
+//
+//        while(newInput.count>0)
 //        {
-//
-//                if(inputString.trimmingCharacters(in: .whitespacesAndNewlines).hasPrefix("("))
-//                {
-//                    inputString = String(inputString.dropFirst())
-//                    evaluater(inputString)
-//                }
-//
-//                inputString = inputString.trimmingCharacters(in: .whitespacesAndNewlines)
-//
-//                let operation = String(inputString.removeFirst())
-//
-//                if(!operationsDictionary.keys.contains(operation))
-//                {
-//                    return nil
-//                }
-//
+//            if let resultarray = numberParser(input: newInput.trimmingCharacters(in: .whitespacesAndNewlines)) //checking if the arg is a number
+//            {
+//                argArray.append(resultarray[0] as Any)
+//                newInput = resultarray[1] as! String
+//            }
+//            else //if arg. is not a number
+//            {
+//                break
+//            }
 //        }
+//
+//        //if(argArray.count == 0) // if the arguments are not numeric
+//        //{
+//        //    return nil
+//        //}
+//
+//        //Return nil if closing ")" is not found after the arg. are extracted
+//        if(!newInput.trimmingCharacters(in: .whitespacesAndNewlines).hasPrefix(")"))
+//        {
+//            return nil
+//        }
+//
+//        return evaluate(operation: firstOperator, argArr: argArray as! [Int])
+//
+//    }
+//    return nil
+//}
+
+func evaluater(_ input:String)->Any?
+{
+    if (input.trimmingCharacters(in: .whitespacesAndNewlines).hasPrefix("("))
+    {
+        var inputArray = input.split(separator: " ")
+        print("1: \(inputArray)")
+        
+        //remove the "("
+        inputArray[0].count > 1 ? String(inputArray[0].removeFirst()) : String(inputArray.remove(at: 0))
+        
+        print("2: \(inputArray)")
+        
+        //if () found
+        if(inputArray[0] == ")")
+        {
+            return nil
+        }
+
+        
+        while(inputArray.count > 0)
+        {
+           
+//            if(inputArray[0].first == "(")
+//            {
+//                inputArray.remove(at: 0)
+//                evaluater(inputArray.joined())//recursive call
+//            }
+//
+//            let operation = String(inputArray.removeFirst()) // get the operator eg. *, +
+//
+//            print("1: \(operation)")
+//            print("2: \(inputArray)")
+//
+//            if(!operationsDictionary.keys.contains(operation))
+//            {
+//                return nil
+//            }
+            
+            var argArray = [Double]()
+            var operation = ""
+            
+            for element in inputArray
+            {
+                if(element.first == "(")
+                {
+                    print("inputArray678: \(inputArray)")
+                    evaluater(inputArray.joined(separator: " "))//recursive call
+                }
+                else if(operationsDictionary.keys.contains(String(element)))
+                {
+                    operation = String(element)
+                    print("operation: \(operation)")
+                    inputArray.remove(at: 0)
+                }
+                else if let result =  numberParser(input: String(element))
+                {
+                    inputArray.remove(at: 0)
+                    argArray.append(result[0] as! Double)
+                    print("1: \(argArray)")
+                    
+                    var remString = result[1] as! String
+                    print("remString: \(remString)")
+                    
+                    if(remString.contains(")")) // for ")"
+                    {
+                        print("Yes done")
+                        break
+                    }
+                }
+                else if element.contains(")")// for non-numeric cases like ")(", ")(+", etc.
+                {
+                    inputArray[0].removeFirst() // remove ")"
+                    print("3: \(inputArray)")
+                    break
+                }
+            }
+            return operationsDictionary[operation]!(argArray)
+        }
     }
     return nil
 }
 
-let res1 = evaluater("(+)")
-
+//let res11 = evaluater("(+ (* 2 3 )( + 45 5))")
+//let res12 = evaluater("(* 2 3)")
+//let res13 = evaluater("( + 45 5)")
+//let res14 = evaluater("( * )")
+//let res15 = evaluater("(> 45 5)")
+//let res13 = evaluater("(<= 45 45)") // problem
+//let res14 = evaluater("(   sqrt  49)   ")
