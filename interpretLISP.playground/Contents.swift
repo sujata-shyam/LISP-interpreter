@@ -407,14 +407,14 @@ operationsDictionary["pi"] = {()->Double in
 //    return nil
 //}
 
-func evaluater(_ input:String)->Any?
+func evaluater( _ input: String)->[Any]?
 {
     if (input.trimmingCharacters(in: .whitespacesAndNewlines).hasPrefix("("))
     {
         var inputArray = input.split(separator: " ")
-        print("1: \(inputArray)")
+        print("inputArray initial: \(inputArray)")
         
-        //remove the "("
+        //remove the initial "("
         inputArray[0].count > 1 ? String(inputArray[0].removeFirst()) : String(inputArray.remove(at: 0))
         
         print("2: \(inputArray)")
@@ -424,73 +424,74 @@ func evaluater(_ input:String)->Any?
         {
             return nil
         }
-
+        var resultArray = [Double]()
+        var argArray = [Double]()
+        var operation = ""
         
-        while(inputArray.count > 0)
+        //for element in inputArray
+        for i in 0..<inputArray.count
         {
-           
-//            if(inputArray[0].first == "(")
-//            {
-//                inputArray.remove(at: 0)
-//                evaluater(inputArray.joined())//recursive call
-//            }
-//
-//            let operation = String(inputArray.removeFirst()) // get the operator eg. *, +
-//
-//            print("1: \(operation)")
-//            print("2: \(inputArray)")
-//
-//            if(!operationsDictionary.keys.contains(operation))
-//            {
-//                return nil
-//            }
-            
-            var argArray = [Double]()
-            var operation = ""
-            
-            for element in inputArray
+            //if(element.first == "(")
+            if(inputArray[0].first == "(")
             {
-                if(element.first == "(")
+                //print("element 1: \(element)")
+                print("inputArray678: \(inputArray)")
+                let result = evaluater(inputArray.joined(separator: " "))  //recursive call
+                print(result)
+                inputArray = result![0] as! [String.SubSequence]
+                resultArray.append(result![1] as! Double)
+                print("inputArrayAgain: \(inputArray)")
+                print("operation: \(operation)")
+                
+                
+                if ( (operation != "") && (inputArray.count == 0) && (resultArray.count > 0))
                 {
-                    print("inputArray678: \(inputArray)")
-                    evaluater(inputArray.joined(separator: " "))//recursive call
+                    argArray = resultArray + argArray
+                    print("transferredargArray: \(argArray)")
                 }
-                else if(operationsDictionary.keys.contains(String(element)))
+            }
+            else if(inputArray.count > 0 && operationsDictionary.keys.contains(String(inputArray[0])))
+            {
+                operation = String(inputArray[0])
+                print("operation: \(operation)")
+                inputArray.remove(at: 0)
+            }
+            else if let result =  numberParser(input: String(inputArray[0]))
+            {
+                inputArray.remove(at: 0)
+                argArray.append(result[0] as! Double)
+                print("argArray 1: \(argArray)")
+                
+                let remString = result[1] as! String
+                print("remString: \(remString)")
+                
+                if(remString.contains(")")) // for ")"
                 {
-                    operation = String(element)
-                    print("operation: \(operation)")
-                    inputArray.remove(at: 0)
-                }
-                else if let result =  numberParser(input: String(element))
-                {
-                    inputArray.remove(at: 0)
-                    argArray.append(result[0] as! Double)
-                    print("1: \(argArray)")
-                    
-                    var remString = result[1] as! String
-                    print("remString: \(remString)")
-                    
-                    if(remString.contains(")")) // for ")"
-                    {
-                        print("Yes done")
-                        break
-                    }
-                }
-                else if element.contains(")")// for non-numeric cases like ")(", ")(+", etc.
-                {
-                    inputArray[0].removeFirst() // remove ")"
-                    print("3: \(inputArray)")
+                    print("Yes done")
                     break
                 }
             }
-            return operationsDictionary[operation]!(argArray)
+            //else if element.contains(")")// for non-numeric cases like ")(", ")(+", etc.
+            else if ( inputArray.count > 0 && inputArray[0].contains(")"))// for non-numeric cases like ")(", ")(+", etc.
+            {
+                print("3.1: \(inputArray)")
+                inputArray[0].removeFirst() // remove ")"
+                print("3.2: \(inputArray)")
+                break
+            }
         }
+            return [inputArray, operationsDictionary[operation]!(argArray) as Any]
     }
     return nil
 }
+// var str = "(+ (* 2 3 )( + 45 5))"
+//let res11 = evaluater(&str)
 
-//let res11 = evaluater("(+ (* 2 3 )( + 45 5))")
-//let res12 = evaluater("(* 2 3)")
+
+let res11 = evaluater("(+ (* 2 3 )( + 45 5))")
+
+let res12 = evaluater("(* 2 3)")
+print(res12)
 //let res13 = evaluater("( + 45 5)")
 //let res14 = evaluater("( * )")
 //let res15 = evaluater("(> 45 5)")
