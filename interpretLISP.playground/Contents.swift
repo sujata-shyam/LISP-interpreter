@@ -411,89 +411,65 @@ func evaluater( _ input: String)->[Any]?
 {
     if (input.trimmingCharacters(in: .whitespacesAndNewlines).hasPrefix("("))
     {
-        var inputArray = input.split(separator: " ")
-        print("inputArray initial: \(inputArray)")
+        var inputArray = input.split(separator: " ")//convert to array for easier operation
         
         //remove the initial "("
         inputArray[0].count > 1 ? String(inputArray[0].removeFirst()) : String(inputArray.remove(at: 0))
         
-        print("2: \(inputArray)")
-        
         //if () found
-        if(inputArray[0] == ")")
-        {
-            return nil
-        }
-        var resultArray = [Double]()
-        var argArray = [Double]()
+        if(inputArray[0] == ")"){return nil}
+        
+        var resultArray = [Double](), argArray = [Double]()
         var operation = ""
         
-        //for element in inputArray
-        for i in 0..<inputArray.count
+        for _ in 0..<inputArray.count
         {
-            //if(element.first == "(")
             if(inputArray[0].first == "(")
             {
-                //print("element 1: \(element)")
-                print("inputArray678: \(inputArray)")
-                let result = evaluater(inputArray.joined(separator: " "))  //recursive call
-                print(result)
+                let result = evaluater(inputArray.joined(separator: " ")) //recursive call for nested exp.
+            
                 inputArray = result![0] as! [String.SubSequence]
                 resultArray.append(result![1] as! Double)
-                print("inputArrayAgain: \(inputArray)")
-                print("operation: \(operation)")
                 
-                
+                //Final operation of results got for the inner ()
                 if ( (operation != "") && (inputArray.count == 0) && (resultArray.count > 0))
                 {
-                    argArray = resultArray + argArray
-                    print("transferredargArray: \(argArray)")
+                    argArray = resultArray + argArray //moving the results as args for the final op.
+                    break
                 }
             }
-            else if(inputArray.count > 0 && operationsDictionary.keys.contains(String(inputArray[0])))
+            else if(operationsDictionary.keys.contains(String(inputArray[0])))
             {
                 operation = String(inputArray[0])
-                print("operation: \(operation)")
                 inputArray.remove(at: 0)
             }
             else if let result =  numberParser(input: String(inputArray[0]))
             {
                 inputArray.remove(at: 0)
                 argArray.append(result[0] as! Double)
-                print("argArray 1: \(argArray)")
-                
                 let remString = result[1] as! String
-                print("remString: \(remString)")
-                
-                if(remString.contains(")")) // for ")"
-                {
-                    print("Yes done")
-                    break
-                }
+                if(remString.contains(")")) { break }// for ")"
             }
-            //else if element.contains(")")// for non-numeric cases like ")(", ")(+", etc.
-            else if ( inputArray.count > 0 && inputArray[0].contains(")"))// for non-numeric cases like ")(", ")(+", etc.
+            else if (inputArray[0].contains(")"))// for non-numeric cases like ")(", ")(+", etc.
             {
-                print("3.1: \(inputArray)")
                 inputArray[0].removeFirst() // remove ")"
-                print("3.2: \(inputArray)")
                 break
             }
         }
-            return [inputArray, operationsDictionary[operation]!(argArray) as Any]
+        return [inputArray, operationsDictionary[operation]!(argArray) as Any]
     }
     return nil
 }
-// var str = "(+ (* 2 3 )( + 45 5))"
-//let res11 = evaluater(&str)
 
 
 let res11 = evaluater("(+ (* 2 3 )( + 45 5))")
-
 let res12 = evaluater("(* 2 3)")
-print(res12)
-//let res13 = evaluater("( + 45 5)")
-//let res14 = evaluater("( * )")
-//let res15 = evaluater("(> 45 5)")
-//let res13 = evaluater("(<= 45 45)") // problem
-//let res14 = evaluater("(   sqrt  49)   ")
+let res13 = evaluater("( + 45 5)")
+let res14 = evaluater("( * )")
+let res15 = evaluater("(> 45 5)")
+let res16 = evaluater("(<= 44 45)")
+let res17 = evaluater("(   sqrt  49)   ")
+let res18 = evaluater("(+ 10 (sqrt 100))")
+let res19 = evaluater("(+ (+ 4 5) (- 16 4))")
+
+
