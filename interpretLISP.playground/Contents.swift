@@ -1,16 +1,225 @@
 import Foundation
 
-//(+ 2 3)
+extension String //Extension to down-cast
+{
+    var isInteger: Bool { return Int(self) != nil }
+    var isFloat: Bool { return Float(self) != nil }
+    var isDouble: Bool { return Double(self) != nil }
+}
 
-//enum Operations:Character
-//{
-//    case add = "+"
-//    case subtract = "-"
-//    case multiply = "*"
-//    case divide = "/"
-//}
+extension Double
+{
+    func roundTo(places:Int) -> Double // for runding off to required precision
+    {
+        let divisor = pow(10.0, Double(places))
+        return (self * divisor).rounded() / divisor
+    }
+}
 
-//let operators = ["+", "*", "-", "/", ">", "<"]
+//typealias Methods = (([Double]) -> Any?) // To represent functions
+
+typealias Methods = (([Any]) -> Any?) // To represent functions
+
+var operationsDictionary = [String:Methods]()
+
+//operationsDictionary["+"] = {(arrOperands:[Double]) -> Double in
+//    return (arrOperands.reduce(0, {$0 + $1}))}
+
+operationsDictionary["+"] = {(arrOperands:[Any]) -> Double in
+    let newOperands = arrOperands as! [Double]
+    return (newOperands.reduce(0, {$0 + $1}))}
+
+//operationsDictionary["*"] = {(arrOperands:[Double]) -> Double in
+//    return (arrOperands.reduce(1, {$0 * $1}))}
+
+operationsDictionary["*"] = {(arrOperands:[Any]) -> Double in
+    let newOperands = arrOperands as! [Double]
+    return (newOperands.reduce(1, {$0 * $1}))}
+
+
+operationsDictionary["-"] = {(arrOperands:[Any]) -> Double? in
+        if(arrOperands.count == 0)
+        {
+            print("Invalid")
+            return nil
+        }
+    
+        let newOperands = arrOperands as! [Double]
+
+        if(newOperands.count == 1)
+        {
+            return -newOperands[0]
+        }
+    
+        var initialVal = newOperands[0]
+    
+        for i in 1..<newOperands.count
+        {
+            initialVal = initialVal - newOperands[i]
+        }
+        return initialVal
+    }
+
+operationsDictionary["/"] = {(arrOperands:[Any]) -> Double? in
+        let newOperands = arrOperands as! [Double]
+    
+        if(newOperands.count == 0 || newOperands[0] == 0)//cannot divide by 0
+        {
+            print("Invalid")
+            return nil
+        }
+        if(newOperands.count == 1)
+        {
+            return 1.0/newOperands[0]
+        }
+
+        var initialVal = newOperands[0]
+
+        for i in 1..<newOperands.count
+        {
+            initialVal = initialVal / newOperands[i]
+        }
+        return initialVal.roundTo(places: 2)
+    }
+
+operationsDictionary[">"] = {(arrOperands:[Any]) -> Bool? in
+    if(arrOperands.count == 2)
+    {
+        let newOperands = arrOperands as! [Double]
+        return newOperands[0] > newOperands[1]
+    }
+    print("Invalid")
+    return nil
+}
+
+operationsDictionary["<"] = {(arrOperands:[Any]) -> Bool? in
+    if(arrOperands.count == 2)
+    {
+        let newOperands = arrOperands as! [Double]
+        return newOperands[0] < newOperands[1]
+    }
+    print("Invalid")
+    return nil
+}
+
+operationsDictionary[">="] = {(arrOperands:[Any]) -> Bool? in
+    if(arrOperands.count == 2)
+    {
+        let newOperands = arrOperands as! [Double]
+        return newOperands[0] >= newOperands[1]
+    }
+    print("Invalid")
+    return nil
+}
+
+operationsDictionary["<="] = {(arrOperands:[Any]) -> Bool? in
+    if(arrOperands.count == 2)
+    {
+        let newOperands = arrOperands as! [Double]
+        return newOperands[0] <= newOperands[1]
+    }
+    print("Invalid")
+    return nil
+}
+
+operationsDictionary["="] = {(arrOperands:[Any]) -> Bool? in
+    if(arrOperands.count == 2)
+    {
+        let newOperands = arrOperands as! [Double]
+        return newOperands[0] == newOperands[1]
+    }
+    print("Invalid")
+    return nil
+}
+
+operationsDictionary["==="] = {(arrOperands:[Any]) -> Bool? in
+    if(arrOperands.count == 2)
+    {
+        let newOperands = arrOperands as! [Double]
+        return newOperands[0] == newOperands[1]
+    }
+    print("Invalid")
+    return nil
+}
+
+operationsDictionary["!=="] = {(arrOperands:[Any]) -> Bool? in
+    if(arrOperands.count == 2)
+    {
+        let newOperands = arrOperands as! [Double]
+        return newOperands[0] != newOperands[1]
+    }
+    print("Invalid")
+    return nil
+}
+
+operationsDictionary["sqrt"] = {(arrOperands:[Any]) -> Double? in
+    if(arrOperands.count == 1)
+    {
+        let newOperands = arrOperands as! [Double]
+        return newOperands[0].squareRoot().roundTo(places: 2)
+    }
+    print("Invalid")
+    return nil
+}
+
+operationsDictionary["abs"] = {(arrOperands:[Any]) -> Double? in
+    if(arrOperands.count == 1)
+    {
+        let newOperands = arrOperands as! [Double]
+        return abs(newOperands[0])
+    }
+    print("Invalid")
+    return nil
+}
+
+operationsDictionary["expt"] = {(arrOperands:[Any]) -> Double? in
+    if(arrOperands.count == 2)
+    {
+        let newOperands = arrOperands as! [Double]
+        return pow(newOperands[0], newOperands[1])
+    }
+    print("Invalid")
+    return nil
+}
+
+operationsDictionary["max"] = {(arrOperands:[Any]) -> Double? in
+    if(arrOperands.count == 2)
+    {
+        let newOperands = arrOperands as! [Double]
+        return max(newOperands[0], newOperands[1])
+    }
+    print("Invalid")
+    return nil
+}
+
+operationsDictionary["min"] = {(arrOperands:[Any]) -> Double? in
+    if(arrOperands.count == 2)
+    {
+        let newOperands = arrOperands as! [Double]
+        return min(newOperands[0], newOperands[1])
+    }
+    print("Invalid")
+    return nil
+}
+
+operationsDictionary["round"] = {(arrOperands:[Any]) -> Double? in
+    if(arrOperands.count == 1)
+    {
+        let newOperands = arrOperands as! [Double]
+        return round(newOperands[0])
+    }
+    print("Invalid")
+    return nil
+}
+
+operationsDictionary["print"] = {(arrOperands:[Any]) -> Double? in
+    print(arrOperands)
+    return nil
+}
+
+operationsDictionary["pi"] = {(Any)->Double in
+    return Double.pi
+}
 
 func numberParser(input: String) -> [Any?]?
 {
@@ -129,15 +338,15 @@ func numberParser(input: String) -> [Any?]?
                     isExponentDone = true
                 }
             default:
-//                if((intArray.joined()).isInteger) //if input is an Integer
-//                {
-//                    return [Int(intArray.joined()), String(inputArray)]
-//                }
-//
-//                if((intArray.joined()).isFloat) //if input is a Float
-//                {
-//                    return [Float(intArray.joined()), String(inputArray)]
-//                }
+                //                if((intArray.joined()).isInteger) //if input is an Integer
+                //                {
+                //                    return [Int(intArray.joined()), String(inputArray)]
+                //                }
+                //
+                //                if((intArray.joined()).isFloat) //if input is a Float
+                //                {
+                //                    return [Float(intArray.joined()), String(inputArray)]
+                //                }
                 
                 //else by default double
                 return [Double(intArray.joined()), String(inputArray)]
@@ -149,263 +358,19 @@ func numberParser(input: String) -> [Any?]?
         return nil
     }
     
-//    if((intArray.joined()).isInteger) //if input is an Integer
-//    {
-//        return [Int(intArray.joined()), String(inputArray)]
-//    }
-//
-//    if((intArray.joined()).isFloat) //if input is a Float
-//    {
-//        return [Float(intArray.joined()), String(inputArray)]
-//    }
+    //    if((intArray.joined()).isInteger) //if input is an Integer
+    //    {
+    //        return [Int(intArray.joined()), String(inputArray)]
+    //    }
+    //
+    //    if((intArray.joined()).isFloat) //if input is a Float
+    //    {
+    //        return [Float(intArray.joined()), String(inputArray)]
+    //    }
     
     //else by default Double
     return [Double(intArray.joined()), String(inputArray)]
 }
-
-extension String //Extension to down-cast
-{
-    var isInteger: Bool { return Int(self) != nil }
-    var isFloat: Bool { return Float(self) != nil }
-    var isDouble: Bool { return Double(self) != nil }
-}
-
-extension Double
-{
-    func roundTo(places:Int) -> Double // for runding off to required precision
-    {
-        let divisor = pow(10.0, Double(places))
-        return (self * divisor).rounded() / divisor
-    }
-}
-
-
-//typealias Methods = (([Double]) -> Double?) // To represent functions
-
-typealias Methods = (([Double]) -> Any?) // To represent functions
-var operationsDictionary = [String:Methods]()
-
-//var operationsDictionary = [String:Any]()
-
-
-operationsDictionary["+"] = {(arrOperands:[Double]) -> Double in
-    return (arrOperands.reduce(0, {$0 + $1}))}
-
-operationsDictionary["*"] = {(arrOperands:[Double]) -> Double in
-    return (arrOperands.reduce(1, {$0 * $1}))}
-
-operationsDictionary["-"] = {(arrOperands:[Double]) -> Double? in
-        if(arrOperands.count == 0)
-        {
-            print("Invalid")
-            return nil
-        }
-        if(arrOperands.count == 1)
-        {
-            return -arrOperands[0]
-        }
-    
-        var initialVal = arrOperands[0]
-    
-        for i in 1..<arrOperands.count
-        {
-            initialVal = initialVal - arrOperands[i]
-        }
-        return initialVal
-    }
-
-operationsDictionary["/"] = {(arrOperands:[Double]) -> Double? in
-        if(arrOperands.count == 0 || arrOperands[0] == 0)//cannot divide by 0
-        {
-            print("Invalid")
-            return nil
-        }
-        if(arrOperands.count == 1)
-        {
-            return 1.0/Double(arrOperands[0])
-        }
-
-        var initialVal = Double(arrOperands[0])
-
-        for i in 1..<arrOperands.count
-        {
-            initialVal = initialVal / Double(arrOperands[i])
-        }
-        return initialVal.roundTo(places: 2)
-    }
-
-operationsDictionary[">"] = {(arrOperands:[Double]) -> Bool? in
-    if(arrOperands.count == 2)
-    {
-        return arrOperands[0] > arrOperands[1]
-    }
-    print("Invalid")
-    return nil
-}
-
-operationsDictionary["<"] = {(arrOperands:[Double]) -> Bool? in
-    if(arrOperands.count == 2)
-    {
-        return arrOperands[0] < arrOperands[1]
-    }
-    print("Invalid")
-    return nil
-}
-
-operationsDictionary[">="] = {(arrOperands:[Double]) -> Bool? in
-    if(arrOperands.count == 2)
-    {
-        return arrOperands[0] >= arrOperands[1]
-    }
-    print("Invalid")
-    return nil
-}
-
-operationsDictionary["<="] = {(arrOperands:[Double]) -> Bool? in
-    if(arrOperands.count == 2)
-    {
-        return arrOperands[0] <= arrOperands[1]
-    }
-    print("Invalid")
-    return nil
-}
-
-operationsDictionary["sqrt"] = {(arrOperands:[Double]) -> Double? in
-    if(arrOperands.count == 1)
-    {
-        return arrOperands[0].squareRoot().roundTo(places: 2)
-    }
-    print("Invalid")
-    return nil
-}
-
-
-/* Not working
-operationsDictionary["print"] = {()->Double in
-    return Double.pi}
-
-operationsDictionary["pi"] = {()->Double in
-    return Double.pi}
-*/
-
-
-//let res1 = operationsDictionary["+"]!([1])
-//let res2 = operationsDictionary["*"]!([])
-//let res3 = operationsDictionary["-"]!([1])
-//let res4 = operationsDictionary["/"]!([4,3,2])
-//let res5 = operationsDictionary[">"]!([2,3])
-//let res6 = operationsDictionary["<"]!([5,6,7])
-//let res7 = operationsDictionary["sqrt"]!([4])
-
-//func evaluate(operation:String, argArr:[Int])->Any?
-//{
-//    switch operation
-//    {
-//        case "+":
-//            return argArr.reduce(0, { x, y in
-//                x + y
-//            })
-//        case "*":
-//            return argArr.reduce(1, { x, y in
-//                x * y
-//            })
-//        case "-":
-//            if(argArr.count == 0)
-//            {
-//                print("Invalid")
-//                return 0
-//            }
-//
-//            if(argArr.count == 1)
-//            {
-//                return -argArr[0]
-//            }
-//
-//            var initialVal = argArr[0]
-//
-//            for i in 1..<argArr.count
-//            {
-//                initialVal = initialVal - argArr[i]
-//            }
-//            return initialVal
-//        case "/":
-//            if(argArr.count == 0)
-//            {
-//                print("Invalid")
-//                return 0
-//            }
-//
-//            if(argArr.count == 1)
-//            {
-//                return 1.0/Double(argArr[0])
-//            }
-//
-//            var initialVal = Double(argArr[0])
-//
-//            for i in 1..<argArr.count
-//            {
-//                initialVal = initialVal / Double(argArr[i])
-//            }
-//            return initialVal
-//
-//        case ">": return argArr[0] > argArr[1]
-//        case "<": return argArr[0] < argArr[1]
-//        case ">=": return argArr[0] >= argArr[1]
-//        case "<=": return argArr[0] <= argArr[1]
-//        case "=": return argArr[0] == argArr[1]
-//        case "pi": return 3.14
-//        default:
-//            print("Still Working")
-//    }
-//    return 0
-//}
-
-//func parseInput(input:String)->Any?
-//{
-//    var newInput =  input.trimmingCharacters(in: .whitespacesAndNewlines)
-//
-//    if(newInput.hasPrefix("(")) //check for initial "(" else return nil
-//    {
-//        newInput = String(newInput.dropFirst()).trimmingCharacters(in: .whitespacesAndNewlines) //remove the initial "(" and then remove white spaces
-//
-//        let firstOperator  = String(newInput.removeFirst())//get the operator
-//
-//        if(!operators.contains(firstOperator)) //if the operator is not from the set of operators
-//        {
-//            return nil
-//        }
-//
-//        var argArray = [Any]()
-//
-//        while(newInput.count>0)
-//        {
-//            if let resultarray = numberParser(input: newInput.trimmingCharacters(in: .whitespacesAndNewlines)) //checking if the arg is a number
-//            {
-//                argArray.append(resultarray[0] as Any)
-//                newInput = resultarray[1] as! String
-//            }
-//            else //if arg. is not a number
-//            {
-//                break
-//            }
-//        }
-//
-//        //if(argArray.count == 0) // if the arguments are not numeric
-//        //{
-//        //    return nil
-//        //}
-//
-//        //Return nil if closing ")" is not found after the arg. are extracted
-//        if(!newInput.trimmingCharacters(in: .whitespacesAndNewlines).hasPrefix(")"))
-//        {
-//            return nil
-//        }
-//
-//        return evaluate(operation: firstOperator, argArr: argArray as! [Int])
-//
-//    }
-//    return nil
-//}
 
 func evaluater( _ input: String)->[Any]?
 {
@@ -419,7 +384,9 @@ func evaluater( _ input: String)->[Any]?
         //if () found
         if(inputArray[0] == ")"){return nil}
         
-        var resultArray = [Double](), argArray = [Double]()
+        var resultArray = [Double]()
+        var argArray = [Any]()
+
         var operation = ""
         
         for _ in 0..<inputArray.count
@@ -446,14 +413,22 @@ func evaluater( _ input: String)->[Any]?
             else if let result =  numberParser(input: String(inputArray[0]))
             {
                 inputArray.remove(at: 0)
-                argArray.append(result[0] as! Double)
+                argArray.append(result[0] as Any)
                 let remString = result[1] as! String
                 if(remString.contains(")")) { break }// for ")"
             }
             else if (inputArray[0].contains(")"))// for non-numeric cases like ")(", ")(+", etc.
             {
-                inputArray[0].removeFirst() // remove ")"
-                break
+                if(inputArray[0].hasPrefix(")"))
+                {
+                    inputArray[0].removeFirst() // remove ")"
+                    break
+                }
+//                else if(inputArray[0].hasSuffix(")"))
+//                {
+//                    inputArray[0].removeLast() // remove ")"
+//                    break
+//                }
             }
         }
         return [inputArray, operationsDictionary[operation]!(argArray) as Any]
@@ -463,13 +438,18 @@ func evaluater( _ input: String)->[Any]?
 
 
 let res11 = evaluater("(+ (* 2 3 )( + 45 5))")
-let res12 = evaluater("(* 2 3)")
+let res12 = evaluater("( * 2 3)")
 let res13 = evaluater("( + 45 5)")
 let res14 = evaluater("( * )")
+let res141 = evaluater("( - 45 )")
+let res142 = evaluater("(/ 8 )")
+//let res143 = evaluater("(* pi 4 3)") //not working
+
 let res15 = evaluater("(> 45 5)")
 let res16 = evaluater("(<= 44 45)")
 let res17 = evaluater("(   sqrt  49)   ")
 let res18 = evaluater("(+ 10 (sqrt 100))")
 let res19 = evaluater("(+ (+ 4 5) (- 16 4))")
-
+let res20 = evaluater("(abs -10.5)")
+let res21 = evaluater("(!== 45 45.0)")
 
