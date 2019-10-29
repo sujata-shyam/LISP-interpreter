@@ -16,141 +16,88 @@ extension Double
     }
 }
 
-//typealias Methods = (([Double]) -> Any?) // To represent functions
 
-typealias Methods = (([Any]) -> Any?) // To represent functions
+//typealias Methods = ((inout [Double]) -> Any?)
 
-var operationsDictionary = [String:Methods]()
+//var operationsDictionary = [String:Methods]()
+//var operationsDictionary = [String:(inout [Double]) -> Any?]()
+//var operationsDictionary = [String:(arrOperands:inout [Double]) -> Any?]()
 
-//operationsDictionary["+"] = {(arrOperands:[Double]) -> Double in
-//    return (arrOperands.reduce(0, {$0 + $1}))}
+var operationsDictionary = [String:([Double]) -> Any?]()
 
-operationsDictionary["+"] = {(arrOperands:[Any]) -> Double in
-    let newOperands = arrOperands as! [Double]
-    return (newOperands.reduce(0, {$0 + $1}))}
+operationsDictionary["+"] = {return ($0.reduce(0, {$0 + $1}))}
+operationsDictionary["*"] = {return ($0.reduce(1, {$0 * $1}))}
 
-//operationsDictionary["*"] = {(arrOperands:[Double]) -> Double in
-//    return (arrOperands.reduce(1, {$0 * $1}))}
+operationsDictionary[">"] = {return ($0[0] > $0[1]) }
+operationsDictionary["<"] = {return ($0[0] < $0[1]) }
+operationsDictionary[">="] = {return ($0[0] >= $0[1]) }
+operationsDictionary["<="] = {return ($0[0] <= $0[1]) }
 
-operationsDictionary["*"] = {(arrOperands:[Any]) -> Double in
-    let newOperands = arrOperands as! [Double]
-    return (newOperands.reduce(1, {$0 * $1}))}
+operationsDictionary["="] = {return ($0[0] == $0[1]) }
+operationsDictionary["==="] = {return ($0[0] == $0[1]) }
+operationsDictionary["!=="] = {return ($0[0] != $0[1]) }
+
+operationsDictionary["-"] = {(arrOperands: [Double]) -> Double? in
+    var newOperands = arrOperands
+    return newOperands.count > 1 ? newOperands.dropFirst().reduce(newOperands.removeFirst(), {$0 - $1} ) : newOperands[0] * -1 }
+
+operationsDictionary["/"] = {(arrOperands: [Double]) -> Double in
+    var newOperands = arrOperands
+    return (newOperands.count == 1 ? 1.0/newOperands[0] : newOperands.dropFirst().reduce(newOperands.removeFirst(), {$0 / $1})).roundTo(places: 2)  }
+
+operationsDictionary["sqrt"] = { return ($0[0].squareRoot().roundTo(places: 2)) }
+
+operationsDictionary["abs"] = { return abs($0[0]) }
+
+operationsDictionary["expt"] = { return pow($0[0], $0[1]) }
+
+operationsDictionary["max"] = {return max($0[0], $0[1]) }
+
+operationsDictionary["min"] = {return min($0[0], $0[1]) }
+
+operationsDictionary["round"] = { return round($0[0]) }
 
 
-operationsDictionary["-"] = {(arrOperands:[Any]) -> Double? in
-        if(arrOperands.count == 0)
-        {
-            print("Invalid")
-            return nil
-        }
-    
-        let newOperands = arrOperands as! [Double]
+/*
+operationsDictionary["-"] = {
+    return ($0.count > 1 ? $0.dropFirst().reduce($0.removeFirst(), {$0[0] - $0[1]} ) : $0[0] * -1) }
 
-        if(newOperands.count == 1)
-        {
-            return -newOperands[0]
-        }
-    
-        var initialVal = newOperands[0]
-    
-        for i in 1..<newOperands.count
-        {
-            initialVal = initialVal - newOperands[i]
-        }
-        return initialVal
-    }
+ operationsDictionary["+"] = {(arrOperands:inout [Double]) -> Double in
+     return (arrOperands.reduce(0, {$0 + $1}))}
 
-operationsDictionary["/"] = {(arrOperands:[Any]) -> Double? in
-        let newOperands = arrOperands as! [Double]
-    
-        if(newOperands.count == 0 || newOperands[0] == 0)//cannot divide by 0
-        {
-            print("Invalid")
-            return nil
-        }
-        if(newOperands.count == 1)
-        {
-            return 1.0/newOperands[0]
-        }
+operationsDictionary["*"] = {(arrOperands:inout [Double]) -> Double in
+    return (arrOperands.reduce(1, {$0 * $1}))}
 
-        var initialVal = newOperands[0]
+operationsDictionary["-"] = {(arrOperands:inout [Double]) -> Double? in
+    return arrOperands.count > 1 ? arrOperands.dropFirst().reduce(arrOperands.removeFirst(), {$0 - $1} ) : arrOperands[0] * -1 }
 
-        for i in 1..<newOperands.count
-        {
-            initialVal = initialVal / newOperands[i]
-        }
-        return initialVal.roundTo(places: 2)
-    }
+operationsDictionary["/"] = {(arrOperands:inout [Double]) -> Double in
+    return arrOperands.count == 1 ? 1.0/arrOperands[0] : arrOperands.dropFirst().reduce(arrOperands.removeFirst(), {$0 / $1} )   }
 
-operationsDictionary[">"] = {(arrOperands:[Any]) -> Bool? in
-    if(arrOperands.count == 2)
-    {
-        let newOperands = arrOperands as! [Double]
-        return newOperands[0] > newOperands[1]
-    }
-    print("Invalid")
-    return nil
-}
+operationsDictionary[">"] = {(arrOperands:inout [Double]) -> Any? in
+    return arrOperands[0] > arrOperands[1]  }
 
-operationsDictionary["<"] = {(arrOperands:[Any]) -> Bool? in
-    if(arrOperands.count == 2)
-    {
-        let newOperands = arrOperands as! [Double]
-        return newOperands[0] < newOperands[1]
-    }
-    print("Invalid")
-    return nil
-}
+operationsDictionary["<"] = {(arrOperands:inout [Double]) -> Any? in
+    return arrOperands[0] < arrOperands[1]  }
 
-operationsDictionary[">="] = {(arrOperands:[Any]) -> Bool? in
-    if(arrOperands.count == 2)
-    {
-        let newOperands = arrOperands as! [Double]
-        return newOperands[0] >= newOperands[1]
-    }
-    print("Invalid")
-    return nil
-}
+operationsDictionary[">="] = {(arrOperands:inout [Double]) -> Any? in
+    return arrOperands[0] >= arrOperands[1]  }
 
-operationsDictionary["<="] = {(arrOperands:[Any]) -> Bool? in
-    if(arrOperands.count == 2)
-    {
-        let newOperands = arrOperands as! [Double]
-        return newOperands[0] <= newOperands[1]
-    }
-    print("Invalid")
-    return nil
-}
+operationsDictionary["<="] = {(arrOperands:inout [Double]) -> Any? in
+    return arrOperands[0] <= arrOperands[1]  }
 
-operationsDictionary["="] = {(arrOperands:[Any]) -> Bool? in
-    if(arrOperands.count == 2)
-    {
-        let newOperands = arrOperands as! [Double]
-        return newOperands[0] == newOperands[1]
-    }
-    print("Invalid")
-    return nil
-}
+operationsDictionary["="] = {(arrOperands:inout [Double]) -> Any? in
+    return arrOperands[0] == arrOperands[1]  }
 
-operationsDictionary["==="] = {(arrOperands:[Any]) -> Bool? in
-    if(arrOperands.count == 2)
-    {
-        let newOperands = arrOperands as! [Double]
-        return newOperands[0] == newOperands[1]
-    }
-    print("Invalid")
-    return nil
-}
+operationsDictionary["==="] = {(arrOperands:inout [Double]) -> Any? in
+    return arrOperands[0] == arrOperands[1]  }
 
-operationsDictionary["!=="] = {(arrOperands:[Any]) -> Bool? in
-    if(arrOperands.count == 2)
-    {
-        let newOperands = arrOperands as! [Double]
-        return newOperands[0] != newOperands[1]
-    }
-    print("Invalid")
-    return nil
-}
+operationsDictionary["!=="] = {(arrOperands:inout [Double]) -> Any? in
+    return arrOperands[0] != arrOperands[1]  }
+*/
+/*
+
+
 
 operationsDictionary["sqrt"] = {(arrOperands:[Any]) -> Double? in
     if(arrOperands.count == 1)
@@ -220,6 +167,8 @@ operationsDictionary["print"] = {(arrOperands:[Any]) -> Double? in
 operationsDictionary["pi"] = {(Any)->Double in
     return Double.pi
 }
+
+ */
 
 func numberParser(input: String) -> [Any?]?
 {
@@ -377,6 +326,7 @@ func evaluater( _ input: String)->[Any]?
     if (input.trimmingCharacters(in: .whitespacesAndNewlines).hasPrefix("("))
     {
         var inputArray = input.split(separator: " ")//convert to array for easier operation
+        //print(inputArray)
         
         //remove the initial "("
         inputArray[0].count > 1 ? String(inputArray[0].removeFirst()) : String(inputArray.remove(at: 0))
@@ -385,8 +335,9 @@ func evaluater( _ input: String)->[Any]?
         if(inputArray[0] == ")"){return nil}
         
         var resultArray = [Double]()
-        var argArray = [Any]()
-
+        //var argArray = [Any]()
+        var argArray = [Double]()
+        
         var operation = ""
         
         for _ in 0..<inputArray.count
@@ -413,9 +364,14 @@ func evaluater( _ input: String)->[Any]?
             else if let result =  numberParser(input: String(inputArray[0]))
             {
                 inputArray.remove(at: 0)
-                argArray.append(result[0] as Any)
+                //argArray.append(result[0] as Any)
+                argArray.append(result[0] as! Double)
                 let remString = result[1] as! String
-                if(remString.contains(")")) { break }// for ")"
+                
+                if(remString.contains(")"))// for ")"
+                {
+                    break
+                }
             }
             else if (inputArray[0].contains(")"))// for non-numeric cases like ")(", ")(+", etc.
             {
@@ -432,6 +388,7 @@ func evaluater( _ input: String)->[Any]?
             }
         }
         return [inputArray, operationsDictionary[operation]!(argArray) as Any]
+        //return [inputArray, operationsDictionary[operation]!(&argArray) as Any]
     }
     return nil
 }
@@ -442,7 +399,9 @@ let res12 = evaluater("( * 2 3)")
 let res13 = evaluater("( + 45 5)")
 let res14 = evaluater("( * )")
 let res141 = evaluater("( - 45 )")
-let res142 = evaluater("(/ 8 )")
+let res145 = evaluater("( - 45 40)")
+let res142 = evaluater("(/ 8 4 2)")
+let res14_2 = evaluater("(/ 8)")
 //let res143 = evaluater("(* pi 4 3)") //not working
 
 let res15 = evaluater("(> 45 5)")
