@@ -57,118 +57,56 @@ operationsDictionary["min"] = {return min($0[0], $0[1]) }
 
 operationsDictionary["round"] = { return round($0[0]) }
 
+operationsDictionary["pi"] = { return (Double.pi) }
 
-/*
-operationsDictionary["-"] = {
-    return ($0.count > 1 ? $0.dropFirst().reduce($0.removeFirst(), {$0[0] - $0[1]} ) : $0[0] * -1) }
+operationsDictionary["print"] = { return(print($0)) }
 
- operationsDictionary["+"] = {(arrOperands:inout [Double]) -> Double in
-     return (arrOperands.reduce(0, {$0 + $1}))}
+//operationsDictionary["-"] = {
+//    return ($0.count > 1 ? $0.dropFirst().reduce($0.removeFirst(), {$0[0] - $0[1]} ) : $0[0] * -1) }
+//
+// operationsDictionary["+"] = {(arrOperands:inout [Double]) -> Double in
+//     return (arrOperands.reduce(0, {$0 + $1}))}
+//
+//operationsDictionary["*"] = {(arrOperands:inout [Double]) -> Double in
+//    return (arrOperands.reduce(1, {$0 * $1}))}
+//
+//operationsDictionary["-"] = {(arrOperands:inout [Double]) -> Double? in
+//    return arrOperands.count > 1 ? arrOperands.dropFirst().reduce(arrOperands.removeFirst(), {$0 - $1} ) : arrOperands[0] * -1 }
+//
+//operationsDictionary["/"] = {(arrOperands:inout [Double]) -> Double in
+//    return arrOperands.count == 1 ? 1.0/arrOperands[0] : arrOperands.dropFirst().reduce(arrOperands.removeFirst(), {$0 / $1} )   }
+//
+//operationsDictionary[">"] = {(arrOperands:inout [Double]) -> Any? in
+//    return arrOperands[0] > arrOperands[1]  }
+//
+//operationsDictionary["<"] = {(arrOperands:inout [Double]) -> Any? in
+//    return arrOperands[0] < arrOperands[1]  }
+//
+//operationsDictionary[">="] = {(arrOperands:inout [Double]) -> Any? in
+//    return arrOperands[0] >= arrOperands[1]  }
+//
+//operationsDictionary["<="] = {(arrOperands:inout [Double]) -> Any? in
+//    return arrOperands[0] <= arrOperands[1]  }
+//
+//operationsDictionary["="] = {(arrOperands:inout [Double]) -> Any? in
+//    return arrOperands[0] == arrOperands[1]  }
+//
+//operationsDictionary["==="] = {(arrOperands:inout [Double]) -> Any? in
+//    return arrOperands[0] == arrOperands[1]  }
+//
+//operationsDictionary["!=="] = {(arrOperands:inout [Double]) -> Any? in
+//    return arrOperands[0] != arrOperands[1]  }
+//
+//operationsDictionary["print"] = {(arrOperands:[Any]) -> Double? in
+//    print(arrOperands)
+//    return nil
+//}
+//
+//operationsDictionary["pi"] = {(Any)->Double in
+//    return Double.pi
+//}
 
-operationsDictionary["*"] = {(arrOperands:inout [Double]) -> Double in
-    return (arrOperands.reduce(1, {$0 * $1}))}
 
-operationsDictionary["-"] = {(arrOperands:inout [Double]) -> Double? in
-    return arrOperands.count > 1 ? arrOperands.dropFirst().reduce(arrOperands.removeFirst(), {$0 - $1} ) : arrOperands[0] * -1 }
-
-operationsDictionary["/"] = {(arrOperands:inout [Double]) -> Double in
-    return arrOperands.count == 1 ? 1.0/arrOperands[0] : arrOperands.dropFirst().reduce(arrOperands.removeFirst(), {$0 / $1} )   }
-
-operationsDictionary[">"] = {(arrOperands:inout [Double]) -> Any? in
-    return arrOperands[0] > arrOperands[1]  }
-
-operationsDictionary["<"] = {(arrOperands:inout [Double]) -> Any? in
-    return arrOperands[0] < arrOperands[1]  }
-
-operationsDictionary[">="] = {(arrOperands:inout [Double]) -> Any? in
-    return arrOperands[0] >= arrOperands[1]  }
-
-operationsDictionary["<="] = {(arrOperands:inout [Double]) -> Any? in
-    return arrOperands[0] <= arrOperands[1]  }
-
-operationsDictionary["="] = {(arrOperands:inout [Double]) -> Any? in
-    return arrOperands[0] == arrOperands[1]  }
-
-operationsDictionary["==="] = {(arrOperands:inout [Double]) -> Any? in
-    return arrOperands[0] == arrOperands[1]  }
-
-operationsDictionary["!=="] = {(arrOperands:inout [Double]) -> Any? in
-    return arrOperands[0] != arrOperands[1]  }
-*/
-/*
-
-
-
-operationsDictionary["sqrt"] = {(arrOperands:[Any]) -> Double? in
-    if(arrOperands.count == 1)
-    {
-        let newOperands = arrOperands as! [Double]
-        return newOperands[0].squareRoot().roundTo(places: 2)
-    }
-    print("Invalid")
-    return nil
-}
-
-operationsDictionary["abs"] = {(arrOperands:[Any]) -> Double? in
-    if(arrOperands.count == 1)
-    {
-        let newOperands = arrOperands as! [Double]
-        return abs(newOperands[0])
-    }
-    print("Invalid")
-    return nil
-}
-
-operationsDictionary["expt"] = {(arrOperands:[Any]) -> Double? in
-    if(arrOperands.count == 2)
-    {
-        let newOperands = arrOperands as! [Double]
-        return pow(newOperands[0], newOperands[1])
-    }
-    print("Invalid")
-    return nil
-}
-
-operationsDictionary["max"] = {(arrOperands:[Any]) -> Double? in
-    if(arrOperands.count == 2)
-    {
-        let newOperands = arrOperands as! [Double]
-        return max(newOperands[0], newOperands[1])
-    }
-    print("Invalid")
-    return nil
-}
-
-operationsDictionary["min"] = {(arrOperands:[Any]) -> Double? in
-    if(arrOperands.count == 2)
-    {
-        let newOperands = arrOperands as! [Double]
-        return min(newOperands[0], newOperands[1])
-    }
-    print("Invalid")
-    return nil
-}
-
-operationsDictionary["round"] = {(arrOperands:[Any]) -> Double? in
-    if(arrOperands.count == 1)
-    {
-        let newOperands = arrOperands as! [Double]
-        return round(newOperands[0])
-    }
-    print("Invalid")
-    return nil
-}
-
-operationsDictionary["print"] = {(arrOperands:[Any]) -> Double? in
-    print(arrOperands)
-    return nil
-}
-
-operationsDictionary["pi"] = {(Any)->Double in
-    return Double.pi
-}
-
- */
 
 func numberParser(input: String) -> [Any?]?
 {
@@ -394,21 +332,24 @@ func evaluater( _ input: String)->[Any]?
 }
 
 
-let res11 = evaluater("(+ (* 2 3 )( + 45 5))")
-let res12 = evaluater("( * 2 3)")
-let res13 = evaluater("( + 45 5)")
-let res14 = evaluater("( * )")
-let res141 = evaluater("( - 45 )")
-let res145 = evaluater("( - 45 40)")
-let res142 = evaluater("(/ 8 4 2)")
-let res14_2 = evaluater("(/ 8)")
-//let res143 = evaluater("(* pi 4 3)") //not working
+//let res11 = evaluater("(+ (* 2 3 )( + 45 5))")
+//let res12 = evaluater("( * 2 3)")
+//let res13 = evaluater("( + 45 5)")
+//let res14 = evaluater("( * )")
+//let res141 = evaluater("( - 45 )")
+//let res145 = evaluater("( - 45 40)")
+//let res142 = evaluater("(/ 8 4 2)")
+//let res14_2 = evaluater("(/ 8)")
 
-let res15 = evaluater("(> 45 5)")
-let res16 = evaluater("(<= 44 45)")
-let res17 = evaluater("(   sqrt  49)   ")
-let res18 = evaluater("(+ 10 (sqrt 100))")
-let res19 = evaluater("(+ (+ 4 5) (- 16 4))")
-let res20 = evaluater("(abs -10.5)")
-let res21 = evaluater("(!== 45 45.0)")
+//let res143 = evaluater("(* pi 4 3)") //not working
+//let res144 = evaluater("(print 4)")
+//let res145 = evaluater("(print hello)") // not working
+
+//let res15 = evaluater("(> 45 5)")
+//let res16 = evaluater("(<= 44 45)")
+//let res17 = evaluater("(   sqrt  49)   ")
+//let res18 = evaluater("(+ 10 (sqrt 100))")
+//let res19 = evaluater("(+ (+ 4 5) (- 16 4))")
+//let res20 = evaluater("(abs -10.5)")
+//let res21 = evaluater("(!== 45 45.0)")
 
