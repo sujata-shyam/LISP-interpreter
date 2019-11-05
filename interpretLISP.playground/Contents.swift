@@ -259,6 +259,23 @@ func numberParser(input: String) -> [Any?]?
     return [Double(intArray.joined()), String(inputArray)]
 }
 
+func defineOp(_ inputArray:[String])->[String]
+{
+    var localInputArray = inputArray
+    
+    //Storing constants eg.: define r 10
+    localInputArray.remove(at: 0) //remove define keyword
+    globalEnvCons[localInputArray[0]] = Double(localInputArray[1])
+    localInputArray.removeSubrange(0...1)//remove the key and value both
+
+    if(localInputArray.count>0 && localInputArray[0] == ")")
+    {
+        localInputArray.remove(at: 0)
+    }
+    
+    return localInputArray //return the remaining array
+}
+
 
 //func evaluater( _ input: String)->[Any]?
 //{
@@ -333,93 +350,246 @@ func numberParser(input: String) -> [Any?]?
 //    return nil
 //}
 
-func evaluateExp( _ input: String)->[Any]?
+let arrSpecialForm = ["define","if","lambda"]
+
+func evaluater(_ input: String)->Any?
 {
+    print("EVALUATER CALLED")
+
     if (input.trimmingCharacters(in: .whitespacesAndNewlines).hasPrefix("("))
     {
-        var inputArray = input.replacingOccurrences(of: "(", with: " ( ").replacingOccurrences(of: ")", with: " ) ").split(separator: " ")//convert to array for easier operation
+        var inputArray = input.replacingOccurrences(of: "(", with: " ( ").replacingOccurrences(of: ")", with: " ) ").components(separatedBy: " ").filter{$0 != ""}//convert to array for easier operation
         
-        //print(inputArray)
+        print("inputArray: \(inputArray)")
+        
         inputArray.remove(at: 0) //remove the initial "("
-        if(inputArray.last == ")") //remove the final ")"
-        {
-            inputArray.removeLast()
-        }
         
         if(inputArray[0] == ")"){ return nil } //if () found
         
-        var resultArray = [Double]()
-        var argArray = [Double]()
-
-        var operation = ""
+//        if(inputArray.last == ")") //remove the final ")" //RECHECK
+//        {
+//            inputArray.removeLast()
+//        }
+        //print(inputArray)
         
-        for _ in 0..<inputArray.count
+        while(inputArray.count > 0)
         {
-            if(inputArray[0].first == "(")
+            if(arrSpecialForm.contains(inputArray[0]))
             {
-                let result = evaluateExp(inputArray.joined(separator: " ")) //recursive call for nested exp.
-                
-                //print("result:\(result)")
-                inputArray = result![0] as! [String.SubSequence]
-                resultArray.append(result![1] as! Double)
-                //print("resultArray: \(resultArray)")
-                //print("inputArray.count: \(inputArray.count)")
-                //Final operation of results got for the inner ()
-                if ( (operation != "") && (inputArray.count == 0) && (resultArray.count > 0))
-                //if ( (operation != "") && (inputArray.count == 1) && (resultArray.count > 0))
-                {
-                    argArray = resultArray + argArray //moving the results as args for the final op.
-                    //inputArray.remove(at: 0)
-                    //print("argArray:\(argArray)")
-                    break
-                }
+                inputArray = specialFormParser(inputArray)
             }
-            else if(globalEnvFunc.keys.contains(String(inputArray[0])))
+            else
             {
-                operation = String(inputArray[0])
-                inputArray.remove(at: 0)
-            }
-            else if(globalEnvCons.keys.contains(String(inputArray[0])))
-            {
-                argArray.append(globalEnvCons[String(inputArray[0])]!)
-                inputArray.remove(at: 0)
-            }
-            else if let result =  numberParser(input: String(inputArray[0]))
-            {
-                inputArray.remove(at: 0)
-                argArray.append(result[0] as! Double)
-            }
-            else if (inputArray[0] == ")")//
-            {
-                inputArray.remove(at: 0)
-                break
+                let res = functionParser(inputArray)
+                print("EVALUATER RETURN RESULT:\(res)")
+                inputArray = res![0] as! [String]
             }
         }
-        return [inputArray, globalEnvFunc[operation]!(argArray) as Any]
-        //return [inputArray, globalEnvFunc[operation]!(&argArray) as Any]
-
     }
     return nil
 }
 
-//let res111 = evaluateExp("(print(+ (* 2 3 )( + 45 5)))")
-//let res11 = evaluateExp("(+ (* 2 3 )( + 45 5))")
-//let res143 = evaluateExp("(* pi 4 3)")
-//let res12 = evaluateExp("( * 2 3)")
-//let res13 = evaluateExp("( + 45 5)")
-//let res14 = evaluateExp("( * )")
-//let res141 = evaluateExp("( - 45 )")
-//let res145 = evaluateExp("( - 45 40)")
-//let res142 = evaluateExp("(/ 8 4 2)")
-//let res14_2 = evaluateExp("(/ 8)")
-//let res144 = evaluateExp("(print 4)")
+func specialFormParser(_ inputArray:[String])->[String]
+{
+    print("specialFormParser CALLED")
+    
+    var localInputArray = inputArray
+    
+    print("localInputArray_special: \(localInputArray)")
+
+    if(inputArray[0] == "define")
+    {
+        localInputArray = defineOp(inputArray)
+    }
+    if(inputArray[0] == "begin")
+    {
+        
+    }
+    if(inputArray[0] == "if")
+    {
+        
+    }
+    return localInputArray
+}
+
+func functionParser(_ inputArray:[String])->[Any]?
+{
+    print("FUNCTION PARSER CALLED")
+
+    struct result{ static var arr = [Double]() }//to store results between function calls
+
+    var localInputArray = inputArray //Making a local copy
+    var argArray = [Double]()
+    var operation = ""
+    
+    print("localInputArray: \(localInputArray)")
+    
+    //for _ in 0..<localInputArray.count
+    while(localInputArray.count > 0)
+    {
+        if(localInputArray[0] == "(")
+        {
+            evaluater(localInputArray.joined(separator: " "))
+            print("localInputArray123: \(localInputArray)")
+
+            //let result = evaluater(localInputArray.joined(separator: " "))
+            //print("result:\(result)")
+            //localInputArray = result![0] as! [String]
+            //resultArray.append(result![1] as! Double)
+            //print("resultArray:\(resultArray)")
+            //Final operation of results got for the inner ()
+//            if ( (operation != "") && (localInputArray.count == 0) && (resultArray.count > 0))
+//            {
+//                argArray = resultArray + argArray //moving the results as args for the final op.
+//                print("argArray:\(argArray)")
+//                break
+//            }
+        }
+        else if(globalEnvFunc.keys.contains(String(localInputArray[0])))
+        {
+            operation = String(localInputArray[0])
+            print("operation: \(operation)")
+            localInputArray.remove(at: 0)
+        }
+        else if(globalEnvCons.keys.contains(String(localInputArray[0])))
+        {
+            argArray.append(globalEnvCons[String(localInputArray[0])]!)
+            localInputArray.remove(at: 0)
+        }
+        else if let resultNumber =  numberParser(input: String(localInputArray[0]))
+        {
+            localInputArray.remove(at: 0)
+            argArray.append(resultNumber[0] as! Double)
+        }
+        else if (localInputArray[0] == ")")//
+        {
+            localInputArray.remove(at: 0)
+            
+            print("operation:\(operation)")
+            if ( (operation != "") && (localInputArray.count == 0) && (result.arr.count > 0))
+            {
+                argArray = result.arr + argArray //moving the results as args for the final op.
+                print("argArray:\(argArray)")
+                break
+            }
+            
+            break
+        }
+    }
+    
+
+    //resultArray.append(globalEnvFunc[operation]!(argArray) as! Double)
+    //print("resultArray:\(resultArray)")
+    
+    result.arr.append(globalEnvFunc[operation]!(argArray) as Any as! Double)
+    print("result.arr:\(result.arr)")
+    print("localInputArray: \(localInputArray)")
+    return [localInputArray, globalEnvFunc[operation]!(argArray) as Any]
+    
+    //return [inputArray, globalEnvFunc[operation]!(&argArray) as Any]
+    //return nil
+}
+
+//func evaluateExp( _ input: String)->[Any]?
+//{
+//    if (input.trimmingCharacters(in: .whitespacesAndNewlines).hasPrefix("("))
+//    {
+//        var inputArray = input.replacingOccurrences(of: "(", with: " ( ").replacingOccurrences(of: ")", with: " ) ").components(separatedBy: " ").filter{$0 != ""}//convert to array for easier operation
 //
-//let res15 = evaluateExp("(> 45 5)")
-//let res16 = evaluateExp("(<= 44 45)")
-//let res17 = evaluateExp("(   sqrt  49)   ")
-//let res18 = evaluateExp("(+ 10 (sqrt 100))")
-//let res19 = evaluateExp("(+ (+ 4 5) (- 16 4))")
-//let res20 = evaluateExp("(abs -10.5)")
-//let res21 = evaluateExp("(!== 45 45.0)")
+//        print(inputArray)
+//
+//        inputArray.remove(at: 0) //remove the initial "("
+//
+//        if(inputArray[0] == ")"){ return nil } //if () found
+//
+//        if(inputArray.last == ")") //remove the final ")" //RECHECK
+//        {
+//            inputArray.removeLast()
+//        }
+//        print(inputArray)
+//        var resultArray = [Double]()
+//        var argArray = [Double]()
+//        var operation = ""
+//
+//        for _ in 0..<inputArray.count
+//        {
+//            //break
+//            if(inputArray[0] == "(")
+//            {
+//                let result = evaluateExp(inputArray.joined(separator: " ")) //recursive call for nested exp.
+//
+//                //print("result:\(result)")
+//                //inputArray = result![0] as! [String.SubSequence]
+//                inputArray = result![0] as! [String]
+//
+//                resultArray.append(result![1] as! Double)
+//                //print("resultArray: \(resultArray)")
+//                //print("inputArray.count: \(inputArray.count)")
+//                //Final operation of results got for the inner ()
+//                if ( (operation != "") && (inputArray.count == 0) && (resultArray.count > 0))
+//                {
+//                    argArray = resultArray + argArray //moving the results as args for the final op.
+//                    //print("argArray:\(argArray)")
+//                    break
+//                }
+//            }
+//            else if(inputArray[0] == "define")
+//            {
+//                inputArray.remove(at: 0)
+//                defineOp(inputArray)
+//            }
+//            else if(globalEnvFunc.keys.contains(String(inputArray[0])))
+//            {
+//                operation = String(inputArray[0])
+//                inputArray.remove(at: 0)
+//            }
+//            else if(globalEnvCons.keys.contains(String(inputArray[0])))
+//            {
+//                argArray.append(globalEnvCons[String(inputArray[0])]!)
+//                inputArray.remove(at: 0)
+//            }
+//            else if let result =  numberParser(input: String(inputArray[0]))
+//            {
+//                inputArray.remove(at: 0)
+//                argArray.append(result[0] as! Double)
+//            }
+//            else if (inputArray[0] == ")")//
+//            {
+//                inputArray.remove(at: 0)
+//                break
+//            }
+//        }
+//        return [inputArray, globalEnvFunc[operation]!(argArray) as Any]
+//        //return [inputArray, globalEnvFunc[operation]!(&argArray) as Any]
+//
+//    }
+//    return nil
+//}
+
+//TEST-CASES
+
+
+let res11 = evaluater("(+ (* 2 3 )( + 45 5))")//NOT WORKING
+
+//let res511 = evaluater("(define r 10)(* r r)")
+//let res411 = evaluater("(if (> 3 2) (- 3 2) (+ 3 2))") //PENDING
+//let res111 = evaluater("(print(+ (* 2 3 )( + 45 5)))") //NOT WORKING
+//let res143 = evaluater("(* pi 4 3)")
+//let res12 = evaluater("( * 2 3)")
+//let res13 = evaluater("( + 45 5)")
+//let res14 = evaluater("( * )")
+//let res141 = evaluater("( - 45 )")
+//let res145 = evaluater("( - 45 40)")
+//let res142 = evaluater("(/ 8 4 2)")
+//let res14_2 = evaluater("(/ 8)")
+//let res144 = evaluater("(print 4)")
+
+//let res15 = evaluater("(> 45 5)")
+//let res16 = evaluater("(<= 44 45)")
+//let res17 = evaluater("(   sqrt  49)   ")
+//let res18 = evaluater("(+ 10 (sqrt 100))")
+//let res19 = evaluater("(+ (+ 4 5) (- 16 4))")
+//let res20 = evaluater("(abs -10.5)")
+//let res21 = evaluater("(!== 45 45.0)")
 
 //let res1441 = evaluateExp("(print HELLO)")// not working
