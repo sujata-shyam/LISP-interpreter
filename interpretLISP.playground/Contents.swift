@@ -569,6 +569,8 @@ func functionParser(_ inputArray:[String])->[Any]?
 //TEST-CASES
 
 
+//let res12 = evaluater("(* 2 3 )")
+
 let res11 = evaluater("(+ (* 2 3 )( + 45 5))")//NOT WORKING
 
 //let res511 = evaluater("(define r 10)(* r r)")
