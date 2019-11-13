@@ -58,10 +58,10 @@ globalEnvFunc["print"] = { return(print($0)) }
 var globalEnvCons = [String:Any]()
 
 globalEnvCons["pi"] = { return Double.pi }()
+globalEnvCons["#f"] = { return false }()
+globalEnvCons["#t"] = { return true }()
 
 /***************************/
-
-
 
 func parse(_ input:String)->Any?
 {
@@ -198,16 +198,12 @@ func eval(_ arr: [Any])->Any?
             
             if(key == "if")
             {
-                if(arr[1] == true)
-                {
-                    return
-                }
+               return ifParse(arr)
             }
             
             if(globalEnvFunc.keys.contains(key))
             {
                 operation = key
-                //print("operation:\(operation)")
                 continue
             }
             else if(globalEnvCons.keys.contains(key))
@@ -227,8 +223,6 @@ func eval(_ arr: [Any])->Any?
     }
     if(!arrArgs.isEmpty && !operation.isEmpty)
     {
-//        print("arrArgs:\(arrArgs)")
-//        print("operation:\(operation)")
         return globalEnvFunc[operation]!(arrArgs)
     }
     
@@ -258,6 +252,26 @@ func defineParse(_ arr: [Any])->Any?
     return nil
 }
 
+func ifParse(_ arr: [Any])->Any?
+{
+    if(arr.count >= 4)
+    {
+        if let testCase = arr[1] as? String, ["#f","null"].contains(testCase)
+        {
+            return arr[3]
+        }
+        if let testCase = arr[1] as? Bool, testCase == false
+        {
+            return arr[3]
+        }
+        else
+        {
+            return arr[2]
+        }
+    }
+    return nil
+}
+
 //func eval(_ exp:Any?) -> Any?
 //{
 //    if(exp is String)
@@ -276,12 +290,6 @@ func defineParse(_ arr: [Any])->Any?
 //    return nil
 //}
 
-let res22 = parse("(if (> 10 20) (+ 1 1) (+ 3 3))")
-
-
-
-//let res3 = parse("(define add4 (let ((x 4))(lambda (y) (+ x y))))")
-
 //WORKING
 
 //let res12 = parse("( + (* 2 3)(+ 1 2) )")
@@ -296,3 +304,10 @@ let res22 = parse("(if (> 10 20) (+ 1 1) (+ 3 3))")
 //let res1 = parse("(+ 1 2)")
 //let res0 = parse("(define r 10)")
 //let res2 = parse("(begin (define r 10) (* pi (* r r)))")
+
+//let res22 = parse("(if (> 10 20) (+ 1 1) (+ 3 3))")
+//let res23 = parse("(+ (if (+ 1 1) 2 (+ 3 4)) 5)")
+//let res24 = parse("(if (>= 3 7) 1 oops)")
+
+
+
