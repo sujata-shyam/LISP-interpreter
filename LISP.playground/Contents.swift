@@ -54,43 +54,13 @@ globalEnvFunc["round"] = { return round($0[0]) }
 
 globalEnvFunc["print"] = { return(print($0)) }
 
-var globalEnvCons = [String:Double]()
+//var globalEnvCons = [String:Double]()
+var globalEnvCons = [String:Any]()
 
 globalEnvCons["pi"] = { return Double.pi }()
 
 /***************************/
 
-//indirect enum Exp
-//{
-//    case Symbol(String)
-//    case Number(Double)
-//    case Arr([Exp])
-//
-//    func getSymbolValue() -> String? {
-//        switch self {
-//        case .Symbol(let str):
-//            return str
-//        default:
-//            return nil
-//        }
-//    }
-//    func getNumberValue() -> Double? {
-//        switch self {
-//        case .Number(let num):
-//            return num
-//        default:
-//            return nil
-//        }
-//    }
-//    func getArray() -> [Exp]? {
-//        switch self {
-//        case .Arr(let arr):
-//            return arr
-//        default:
-//            return nil
-//        }
-//    }
-//}
 
 
 func parse(_ input:String)->Any?
@@ -161,7 +131,8 @@ func readFromTokens(_ arr: inout [String])->Any?
         
             //print(subArr)
             //return subArr
-            print(eval(subArr) as Any)
+            //print("eval:")
+            //print(eval(subArr) as Any)
             return eval(subArr)
         }
         else if(token == ")")
@@ -185,25 +156,63 @@ func readFromTokens(_ arr: inout [String])->Any?
 
 func eval(_ arr: [Any])->Any?
 {
-    print(arr)
+    print("eval: \(arr)")
     var operation = String()
     var arrArgs = [Double]()
     
+    
+    //for (index, token) in arr.enumerated()
     for token in arr
     {
-        print("token:\(token)")
+        //print("token:\(token)")
         if(token is String)
         {
             let key = token as! String
+            
+            if(key == "define")
+            {
+                return defineParse(arr)
+//                if(arr.count == 3)
+//                {
+//                    let newGlobalVar = arr[index+1] as! String
+//                    print("newGlobalVar: \(newGlobalVar)")
+//                    //let typeOfValue = type(of: arr[index+2])
+//                    //let value = arr[index+2] as? typeOfValue
+//
+//                    if arr[index+2] is Double
+//                    {
+//                        globalEnvCons[newGlobalVar] = arr[index+2] as? Double
+//                    }
+//                    else
+//                    {
+//                        globalEnvCons[newGlobalVar] = arr[index+2] as? String
+//                    }
+//                    return arr[index+2]
+//                }
+            }
+            
+            if(key == "begin")
+            {
+                return arr.last
+            }
+            
+            if(key == "if")
+            {
+                if(arr[1] == true)
+                {
+                    return
+                }
+            }
+            
             if(globalEnvFunc.keys.contains(key))
             {
                 operation = key
-                print("operation:\(operation)")
+                //print("operation:\(operation)")
                 continue
             }
             else if(globalEnvCons.keys.contains(key))
             {
-                if let val = globalEnvCons[key]
+                if let val = globalEnvCons[key] as! Double?
                 {
                     arrArgs.append(val)
                     continue
@@ -218,11 +227,34 @@ func eval(_ arr: [Any])->Any?
     }
     if(!arrArgs.isEmpty && !operation.isEmpty)
     {
-        print("arrArgs:\(arrArgs)")
-        print("operation:\(operation)")
+//        print("arrArgs:\(arrArgs)")
+//        print("operation:\(operation)")
         return globalEnvFunc[operation]!(arrArgs)
     }
     
+    return nil
+}
+
+func defineParse(_ arr: [Any])->Any?
+{
+    if(arr.count == 3)
+    {
+        for _ in 0...3
+        {
+            let newGlobalVar = arr[1] as! String
+            print("newGlobalVar: \(newGlobalVar)")
+            
+            if arr[2] is Double
+            {
+                globalEnvCons[newGlobalVar] = arr[2] as? Double
+            }
+            else
+            {
+                globalEnvCons[newGlobalVar] = arr[2] as? String
+            }
+            return arr[2]
+        }
+    }
     return nil
 }
 
@@ -244,13 +276,15 @@ func eval(_ arr: [Any])->Any?
 //    return nil
 //}
 
-//let res0 = parse("(define r 10)")
-//let res1 = eval(parse("( + (* 2 3)(+ 1 2) )") as! [Any])
-//let res1 = eval(parse("(+ 1 2)"))
-let res12 = parse("( + (* 2 3)(+ 1 2) )")
-//let res2 = parse("(begin (define r 10) (* pi (* r r)))")
-//let res3 = parse("(* pi (* r r))")
+let res22 = parse("(if (> 10 20) (+ 1 1) (+ 3 3))")
 
+
+
+//let res3 = parse("(define add4 (let ((x 4))(lambda (y) (+ x y))))")
+
+//WORKING
+
+//let res12 = parse("( + (* 2 3)(+ 1 2) )")
 //let res15 = parse("(> 45 5)")
 //let res16 = parse("(<= 44 45)")
 //let res17 = parse("(   sqrt  49)   ")
@@ -258,3 +292,7 @@ let res12 = parse("( + (* 2 3)(+ 1 2) )")
 //let res19 = parse("(+ (+ 4 5) (- 16 4))")
 //let res20 = parse("(abs -10.5)")
 //let res21 = parse("(!== 45 45.0)")
+//let res143 = parse("(* pi 4 3)")
+//let res1 = parse("(+ 1 2)")
+//let res0 = parse("(define r 10)")
+//let res2 = parse("(begin (define r 10) (* pi (* r r)))")
