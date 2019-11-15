@@ -124,14 +124,15 @@ func readFromTokens(_ arr: inout [String])->Any?
         
         if(token == "(")
         {
-            //print("token:\(token)")
-
             var subArr = [Any]()
             while(arr[0] != ")")
             {
+                print("Arr before readFromTokens:\(arr)")
                 subArr.append(readFromTokens(&arr) as Any)
+                print("subArr before loop ends:\(subArr)")
+                print("Arr after readFromTokens:\(arr)")
             }
-            //print("subArr:\(subArr)")
+            print("subArr after loop ends:\(subArr)")
             arr.remove(at: 0) //remove ")"
             return eval(subArr)
         }
@@ -147,19 +148,17 @@ func readFromTokens(_ arr: inout [String])->Any?
             }
             else
             {
-                
-                /******** NEW CODE 14/11/2019 ************/
-                
-                print("token:\(token)")
+//                print("token:\(token)")
+//                if(token == "define")
+//                {
+//                    print(arr)
+//                    return defineParse(arr)
+//                }
                 if(token == "lambda")
                 {
-                    print(arr)
+                    //print("arr before lambdaParse:\(arr)")
+                    return lambdaParse(&arr)
                 }
-                
-                /*****************************************/
-
-                
-                
                 return token
             }
         }
@@ -172,7 +171,6 @@ func eval(_ arr: [Any])->Any?
     print("eval: \(arr)")
     var operation = String()
     var arrArgs = [Double]()
-    
     
     //for (index, token) in arr.enumerated()
     for token in arr
@@ -195,7 +193,7 @@ func eval(_ arr: [Any])->Any?
             
             if(key == "if")
             {
-               return ifParse(arr)
+                return ifParse(arr)
             }
             
             if(globalEnvFunc.keys.contains(key))
@@ -222,12 +220,13 @@ func eval(_ arr: [Any])->Any?
     {
         return globalEnvFunc[operation]!(arrArgs)
     }
-    
     return nil
 }
 
 func defineParse(_ arr: [Any])->Any?
 {
+    print("In defineParse: \(arr)")
+    
     if(arr.count == 3 && !restrictedKW.contains(arr[1] as! String))
     {
         if arr[2] is Double
@@ -264,44 +263,74 @@ func ifParse(_ arr: [Any])->Any?
     return nil
 }
 
-func lambdaParse(_ arr: [Any])->Any?
+//func lambdaParse(_ arr: inout [String])->Any?
+func lambdaParse(_ arr: inout [String])->String?
 {
-    if(arr.count >= 4)
+    print("lambda parse arr: \(arr)")
+    
+    //removing the extra ")" in the end
+    let openParaCount = arr.filter({$0 == "("}).count
+    //print("openParaCount: \(openParaCount)")
+    let closeParaCount = arr.filter({$0 == ")"}).count
+    //print("closeParaCount: \(closeParaCount)")
+
+    var counter = 0
+    if(closeParaCount > openParaCount)
     {
-        
+        //var paraDiff = closeParaCount - openParaCount
+        for _ in 0..<closeParaCount - openParaCount
+        {
+            if(arr.last == ")")
+            {
+                arr.removeLast()
+                counter += 1
+            }
+        }
+
+        //Remove the foll. 5 lines
+//        print("arr after removing ): \(arr)")
+//        let openParaCount1 = arr.filter({$0 == "("}).count
+//        print("openParaCount1: \(openParaCount1)")
+//        let closeParaCount1 = arr.filter({$0 == ")"}).count
+//        print("closeParaCount1: \(closeParaCount1)")
     }
-    return nil
+    //print(arr.joined(separator: " "))
+    
+    //Removing the initial (r)
+    if(arr.first == "(")
+    {
+        if let tempVar = arr.firstIndex(where: {$0 == ")"})
+        {
+            arr.removeSubrange(0...tempVar)
+            //print("arr after removal: \(arr)")
+        }
+    }
+    //globalEnvCons["tempFunc"] = arr.joined(separator: " ")
+    print("lambda" + arr.joined(separator: " "))
+    
+    arr.removeAll()
+    for _ in 0...counter
+    {
+        arr.append(")")
+    }
+    
+    return "lambda" + arr.joined(separator: " ")
 }
 
-//func eval(_ exp:Any?) -> Any?
-//{
-//    if(exp is String)
-//    {
-//
-//    }
-//    else if(exp is Double || exp is Int)
-//    {
-//        return exp
-//    }
-//    else if()
-//    {
-//
-//    }
-//
-//    return nil
-//}
 
 //TESTING
-let res30 = parse("(lambda (x) (+ (* 2 x) (+ 2 x)))")
-["(", "x", ")", "(", "+", "(", "*", "2", "x", ")", "(", "+", "2", "x", ")", ")", ")"]
+//let res30 = parse("(lambda (x) (+ (* 2 x) (+ 2 x)))")
+//["(", "x", ")", "(", "+", "(", "*", "2", "x", ")", "(", "+", "2", "x", ")", ")", ")"]
 
 //let res31 = parse("(define circle-area (lambda (r) (* pi (* r r) ) ))")
+//print(res31)
 //  ["(", "r", ")", "(", "*", "pi", "(", "*", "r", "r", ")", ")", ")", ")"]
 
 //let res31 = parse("(define fact (lambda (n) (if (<= n 1) 1 (* n (fact (- n 1))))))")
 //["(", "n", ")", "(", "if", "(", "<=", "n", "1", ")", "1", "(", "*", "n", "(", "fact", "(", "-", "n", "1", ")", ")", ")", ")", ")", ")"]
 
 let res31 = parse("(define twice (lambda (x) (* 2 x)))")
+//print(res31)
 //["(", "x", ")", "(", "*", "2", "x", ")", ")", ")"]
 
 //WORKING
@@ -319,7 +348,6 @@ let res31 = parse("(define twice (lambda (x) (* 2 x)))")
 //let res0 = parse("(define r 10)")
 //let res01 = parse("(define plus +)")
 //let res02 = parse("(define define +)")
-
 //let res2 = parse("(begin (define r 10) (* pi (* r r)))")
 
 //let res22 = parse("(if (> 10 20) (+ 1 1) (+ 3 3))")
