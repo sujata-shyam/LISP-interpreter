@@ -213,10 +213,21 @@ func eval(_ arr: [Any])->Any?
             }
             else if(globalEnvCons.keys.contains(key))
             {
-                if let val = globalEnvCons[key] as! Double?
+//                if let val = globalEnvCons[key] as! Double?
+//                {
+//                    arrArgs.append(val)
+//                    continue
+//                }
+                if let val = globalEnvCons[key] as? Double?
                 {
-                    arrArgs.append(val)
+                    arrArgs.append(val!)
                     continue
+                }
+                else if let val = globalEnvCons[key] as? String?
+                {
+                    print("Its LAMBDA evaluation")
+                    print(val as Any)
+                    let tempResult = parse(val!)
                 }
             }
         }
@@ -317,25 +328,30 @@ func lambdaParse(_ arr: inout [String])->String?
 //        let closeParaCount1 = arr.filter({$0 == ")"}).count
 //        print("closeParaCount1: \(closeParaCount1)")
     }
-    //print(arr.joined(separator: " "))
+    print(arr.joined(separator: " "))
     
     //Removing the initial (r)
     if(arr.first == "(")
     {
-        if let tempVar = arr.firstIndex(where: {$0 == ")"})
+        arr.remove(at: 0) //remove "("
+        if let tempIndex = arr.firstIndex(where: {$0 == ")"})
         {
-            arr.removeSubrange(0...tempVar)
-            //print("arr after removal: \(arr)")
+            let tempPara = arr[0..<tempIndex].joined()
+            //let tempCon = tempPara.joined()
+            //print("tempPara:\(tempPara)")
+            //print(type(of: tempPara))
+
+            globalEnvCons[tempPara] = tempPara
+            
+            arr.removeSubrange(0...tempIndex)
+            print("arr after removal: \(arr)")
         }
     }
-    
     let tempReturn = "lambda" + arr.joined(separator: " ")
     
-//    print("type of tempReturn:")
-//    print(type(of: tempReturn))
-//
+    //print("type of tempReturn:")
+    //print(type(of: tempReturn))
     //let tempReturn:String = "lambda" + arr.joined(separator: " ")
-
     //print("lambda" + arr.joined(separator: " "))
     
     arr.removeAll()
@@ -343,9 +359,7 @@ func lambdaParse(_ arr: inout [String])->String?
     {
         arr.append(")")
     }
-    
     return tempReturn
-    //return "lambda" + arr.joined(separator: " ")
 }
 
 
@@ -388,7 +402,9 @@ parse("(twice 5)")
 //let res22 = parse("(if (> 10 20) (+ 1 1) (+ 3 3))")
 //let res23 = parse("(+ (if (+ 1 1) 2 (+ 3 4)) 5)")
 //let res24 = parse("(if (>= 3 7) 1 oops)")
+//let res24 = parse("(if #t 1 0)")
+
 //let res25 = parse("(begin (define x 12) (define y 1) (if (> x y) (+ (+ x y) (* x y)) (* x y)))")
-//let res25 = parse("(begin (define x 12) (define x 1) (+ x x))")
+//let res25 = parse("(begin (define x 1) (define x 12) (+ x x))")
 
 
